@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>Currency Converter</title>
@@ -7,19 +7,25 @@
 <body>
 <h1>Welcome to Currency Converter</h1>
 <h2>Usage: </h2>
-<p>1. Send GET request to <a href='/convert?from=USD&to=EUR&monetaryValue=100'>/convert?from=USD&to=EUR&monetaryValue=100</a></p>
+<p>1. Send GET request to <a href='/convert?from=USD&to=EUR&monetaryValue=100'>/convert?from=USD&to=EUR&monetaryValue=100</a>
+</p>
 <p>or</p>
 <p>2. Use the form to select currencies and submit the request</p>
-<div>FROM:
-    <select id="from">
-        <option th:each="entry : ${symbols.entrySet()}" th:value="${entry.key}" th:text="${entry.key +': ' + entry.value}">
-    </select>
-    TO:
-    <select id="to">
-        <option th:each="entry : ${symbols.entrySet()}" th:value="${entry.key}" th:text="${entry.key +': ' + entry.value}">
-    </select>
-    AMOUNT:<input id="monetaryValue" type="text" size="5"/>
-    <button type="Submit">Convert</button>
+<div>
+    <form action="#" th:action="@{/}" th:object="${convertInput}" method="post">
+        FROM:
+        <select th:field="*{from}">
+            <option th:each="entry : ${symbols.entrySet()}" th:value="${entry.key}"
+                    th:text="${entry.key +': ' + entry.value}">
+        </select>
+        TO:
+        <select th:field="*{to}">
+            <option th:each="entry : ${symbols.entrySet()}" th:value="${entry.key}"
+                    th:text="${entry.key +': ' + entry.value}">
+        </select>
+        AMOUNT:<input th:field="*{amount}" type="text" size="5"/>
+        <button type="submit">Convert</button>
+    </form>
 </div>
 </body>
 </html>
