@@ -14,10 +14,15 @@ import javax.validation.ConstraintViolationException;
 @ResponseStatus
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler({ConstraintViolationException.class, BadRequestException.class})
+    @ExceptionHandler({ConstraintViolationException.class})
     public ResponseEntity<ErrorMessage> inputNotValidException(Exception exception, WebRequest request) {
         ErrorMessage message = new ErrorMessage(exception.getMessage(), HttpStatus.BAD_REQUEST);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+    }
+
+    @ExceptionHandler({BadRequestException.class})
+    public ResponseEntity<String> badRequestException(Exception exception, WebRequest request) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
     }
 }
