@@ -24,24 +24,19 @@ public class CurrencyServiceImpl implements CurrencyService {
     private long timeout;
 
     @Override
-    public ConvertResponse convert(String from, String to, String amount) {
-        // call to external API to get the converted currency result
+    public Mono<ConvertResponse> convert(String from, String to, String amount) {
         WebClient client = WebClient.create();
 
-        ConvertResponse response = client.get()
+        return client.get()
                 .uri(String.format(CONVERT_URI, from, to, amount))
                 .header("apikey", apikey)
                 .accept(MediaType.APPLICATION_JSON)
-                .exchangeToMono(clientResponse -> {
-                    if (clientResponse.statusCode().isError()) {
-                        return clientResponse.bodyToMono(String.class)
-                                .flatMap(resp -> Mono.error(new BadRequestException(resp)));
-                    }
-                    return clientResponse.bodyToMono(ConvertResponse.class);
-                })
-                .block(Duration.ofSeconds(timeout));  //might want to do it asynchronously instead
-
-        return response;
+                .retrieve()
+                .onStatus(HttpStatus::isError, clientResponse ->
+                        clientResponse.bodyToMono(String.class)
+                                .flatMap(resp -> Mono.error(new BadRequestException(resp)))
+                )
+                .bodyToMono(ConvertResponse.class);
     }
 
     @Override
